@@ -110,7 +110,7 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
       )
       tmp <- 
 #       uploads[[i]] <- 
-        box:::box_upload_new(dir_id, file.path(local_dir, box_dd$new$name[i]),
+        boxr:::box_upload_new(dir_id, file.path(local_dir, box_dd$new$name[i]),
                        pb = FALSE)
       return (tmp)
     }
