@@ -78,7 +78,8 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   uploads <- list()
   
   if (overwrite && nrow(box_dd$to_update) > 0)
-    for (i in 1:nrow(box_dd$to_update)) {
+    updates=foreach (i=1:nrow(box_dd$to_update),.combine=c, .packages = c("boxr")) %dopar% {
+    #for (i in 1:nrow(box_dd$to_update)) {
       catif(
         paste0(
           "Updating file (", i,"/",nrow(box_dd$to_update),"): ", 
@@ -86,27 +87,32 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
         )
       )
       
-      updates[[i]] <- 
+#       updates[[i]] <- 
+      tmp <- 
         box_update_file(
           box_dd$to_update$id[i],
           file.path(local_dir, box_dd$to_update$name[i]),
           dir_id,
           pb = FALSE
         )
+      return (tmp)
     }
   
   # Run through the files to upload, and upload up dates
   if (nrow(box_dd$new) > 0)
-    for (i in 1:nrow(box_dd$new)) {
+      uploads=foreach (i=1:nrow(box_dd$new),.combine=c, .packages = c("boxr"))  %dopar% {
+#     for (i in 1:nrow(box_dd$new)) {
       catif(
         paste0(
           "Uploading new file (", i,"/",nrow(box_dd$new),"): ", 
           box_dd$new$name[i]
         )
       )
-      uploads[[i]] <- 
+      tmp <- 
+#       uploads[[i]] <- 
         box_upload_new(dir_id, file.path(local_dir, box_dd$new$name[i]),
                        pb = FALSE)
+      return (tmp)
     }
   
   # An output object
