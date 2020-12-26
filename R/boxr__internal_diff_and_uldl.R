@@ -78,7 +78,7 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   uploads <- list()
   
   if (overwrite && nrow(box_dd$to_update) > 0)
-    updates=foreach (i=1:nrow(box_dd$to_update),.combine=c, .packages = c("boxr")) %dopar% {
+    updates=foreach (i=1:nrow(box_dd$to_update), .packages = c("boxr","httr")) %dopar% {
     #for (i in 1:nrow(box_dd$to_update)) {
       boxr::box_auth()
       boxr:::catif(
@@ -101,7 +101,7 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   
   # Run through the files to upload, and upload up dates
   if (nrow(box_dd$new) > 0)
-      uploads=foreach (i=1:nrow(box_dd$new),.combine=c, .packages = c("boxr"))  %dopar% {
+      uploads=foreach (i=1:nrow(box_dd$new), .packages = c("boxr","httr"))  %dopar% {
 #     for (i in 1:nrow(box_dd$new)) {
       boxr::box_auth()
       boxr:::catif(
