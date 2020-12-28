@@ -78,10 +78,10 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   uploads <- list()
   
   if (overwrite && nrow(box_dd$to_update) > 0)
-    updates=foreach (i=1:nrow(box_dd$to_update), .packages = c("boxr","httr")) %dopar% {
+    updates=foreach (i=1:nrow(box_dd$to_update), .export=c("client_id","client_secret"), .packages = c("boxr","httr")) %dopar% {
     #for (i in 1:nrow(box_dd$to_update)) {
-      boxr::box_auth()
-      boxr:::catif(
+      box_auth(client_id,client_secret)
+      catif(
         paste0(
           "Updating file (", i,"/",nrow(box_dd$to_update),"): ", 
           box_dd$to_update$name[i]
@@ -90,7 +90,7 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
       
 #       updates[[i]] <- 
       tmp <- 
-        boxr:::box_update_file(
+        box_update_file(
           box_dd$to_update$id[i],
           file.path(local_dir, box_dd$to_update$name[i]),
           dir_id,
@@ -101,10 +101,10 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   
   # Run through the files to upload, and upload up dates
   if (nrow(box_dd$new) > 0)
-      uploads=foreach (i=1:nrow(box_dd$new), .packages = c("boxr","httr"))  %dopar% {
+      uploads=foreach (i=1:nrow(box_dd$new), .export = c("client_id","client_secret"), .packages = c("boxr","httr"))  %dopar% {
 #     for (i in 1:nrow(box_dd$new)) {
-      boxr::box_auth()
-      boxr:::catif(
+      box_auth(client_id,client_secret)
+      catif(
         paste0(
           "Uploading new file (", i,"/",nrow(box_dd$new),"): ", 
           box_dd$new$name[i]
@@ -112,7 +112,7 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
       )
       tmp <- 
 #       uploads[[i]] <- 
-        boxr:::box_upload_new(dir_id, file.path(local_dir, box_dd$new$name[i]),
+        box_upload_new(dir_id, file.path(local_dir, box_dd$new$name[i]),
                        pb = FALSE)
       return (tmp)
     }
