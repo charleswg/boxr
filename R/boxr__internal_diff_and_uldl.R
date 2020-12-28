@@ -69,7 +69,7 @@ downloadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE,
 #' @rdname downloadDirFiles
 uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   
-  box_dd <- box_dir_diff(dir_id, local_dir, load = "up")
+  box_dd <- boxr:::box_dir_diff(dir_id, local_dir, load = "up")
   if (is.null(box_dd))
     return(NULL)
   
@@ -79,18 +79,18 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   
   if (overwrite && nrow(box_dd$to_update) > 0)
     updates=foreach (i=1:nrow(box_dd$to_update), .export=c("client_id","client_secret"), .packages = c("boxr","httr")) %dopar% {
-    #for (i in 1:nrow(box_dd$to_update)) {
-      box_auth(client_id,client_secret)
-      catif(
+      #for (i in 1:nrow(box_dd$to_update)) {
+      boxr::box_auth(client_id,client_secret)
+      boxr:::catif(
         paste0(
           "Updating file (", i,"/",nrow(box_dd$to_update),"): ", 
           box_dd$to_update$name[i]
         )
       )
       
-#       updates[[i]] <- 
+      #       updates[[i]] <- 
       tmp <- 
-        box_update_file(
+        boxr:::box_update_file(
           box_dd$to_update$id[i],
           file.path(local_dir, box_dd$to_update$name[i]),
           dir_id,
@@ -101,19 +101,19 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   
   # Run through the files to upload, and upload up dates
   if (nrow(box_dd$new) > 0)
-      uploads=foreach (i=1:nrow(box_dd$new), .export = c("client_id","client_secret"), .packages = c("boxr","httr"))  %dopar% {
-#     for (i in 1:nrow(box_dd$new)) {
-      box_auth(client_id,client_secret)
-      catif(
+    uploads=foreach (i=1:nrow(box_dd$new),.export=c("client_id","client_secret"), .packages = c("boxr","httr"))  %dopar% {
+      #     for (i in 1:nrow(box_dd$new)) {
+      boxr::box_auth(client_id,client_secret)
+      boxr:::catif(
         paste0(
           "Uploading new file (", i,"/",nrow(box_dd$new),"): ", 
           box_dd$new$name[i]
         )
       )
       tmp <- 
-#       uploads[[i]] <- 
-        box_upload_new(dir_id, file.path(local_dir, box_dd$new$name[i]),
-                       pb = FALSE)
+        #       uploads[[i]] <- 
+        boxr:::box_upload_new(dir_id, file.path(local_dir, box_dd$new$name[i]),
+                              pb = FALSE)
       return (tmp)
     }
   
