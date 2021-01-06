@@ -77,6 +77,10 @@ uploadDirFiles <- function(dir_id, local_dir = getwd(), overwrite = TRUE) {
   updates <- list()
   uploads <- list()
   
+  box_token=boxr:::get_token()
+  client_id=box_token$auth_token$app$key
+  client_secret=box_token$auth_token$app$secret
+  
   if (overwrite && nrow(box_dd$to_update) > 0)
     updates=foreach (i=1:nrow(box_dd$to_update), .export=c("client_id","client_secret"), .packages = c("boxr","httr")) %dopar% {
       #for (i in 1:nrow(box_dd$to_update)) {
